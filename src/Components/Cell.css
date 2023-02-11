@@ -1,0 +1,37 @@
+.cell {
+    display: grid;
+    place-items: center;
+
+    width: 40px;
+    height: 40px;
+
+    border: 1px solid rgb(104, 104, 104);
+    color: white;
+
+    font-size: 1.5rem;
+
+    cursor: pointer;
+    background-color: #262626;
+}
+
+.cell:hover {
+    background-color: #545454;
+}
+
+.mine {
+    background-color: #d63f83;
+}
+
+.revealed {
+    background-color: #4d4d4d;
+}
+
+
+.one { color: #1e90ff; }
+.two { color: #00ff00; }
+.three { color: #ff0000; }
+.four { color: #0000ff; }
+.five { color: #ff00ff; }
+.six { color: #00ffff; }
+.seven { color: #000000; }
+.eight { color: #ffffff; }

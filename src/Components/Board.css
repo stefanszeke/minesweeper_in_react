@@ -1,0 +1,60 @@
+.board {
+    margin: 20px auto;
+    display: grid;
+    max-width: 400px;
+    grid-template-columns: repeat(10, 40px);
+}
+
+.board-lost {
+    position: relative;
+    user-select: none;
+    pointer-events: none;
+}
+
+.board-lost::before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(148, 63, 63, 0.5);
+}
+
+.board-lost::after {
+    content: "Game_Over";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 4rem;
+    background-color: rgba(48, 48, 48, 0.746);
+    padding: 5px 10px;
+    border-radius: 6px;
+}
+
+.board-won {
+    position: relative;
+    user-select: none;
+    pointer-events: none;
+}
+
+.board-won::before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(63, 148, 63, 0.5);
+}
+
+.board-won::after {
+    content: "You_Won";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 4rem;
+    background-color: rgba(48, 48, 48, 0.746);
+    padding: 5px 10px;
+    border-radius: 6px;
+}
