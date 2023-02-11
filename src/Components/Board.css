@@ -1,14 +1,17 @@
 .board {
-    margin: 20px auto;
     display: grid;
-    max-width: 400px;
-    grid-template-columns: repeat(10, 40px);
+    grid-auto-flow: column;
+    border: 5px solid rgb(154, 154, 154);
+
 }
 
 .board-lost {
     position: relative;
     user-select: none;
     pointer-events: none;
+}
+
+.board-row {
 }
 
 .board-lost::before {

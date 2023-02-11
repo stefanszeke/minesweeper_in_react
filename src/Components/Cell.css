@@ -5,7 +5,7 @@
     width: 40px;
     height: 40px;
 
-    border: 1px solid rgb(104, 104, 104);
+    border: 1px solid rgb(154, 154, 154);
     color: white;
 
     font-size: 1.5rem;
@@ -23,10 +23,18 @@
 }
 
 .revealed {
-    background-color: #4d4d4d;
+    background-color: #4e5254;
 }
 
+.flagged {
+    background-color: #d09a61;
+    border: 1px solid white;
+}
 
+.zero {
+    border: none;
+    background-color: #686868;
+}
 .one { color: #1e90ff; }
 .two { color: #00ff00; }
 .three { color: #ff0000; }

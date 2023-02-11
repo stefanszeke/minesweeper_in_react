@@ -9,11 +9,18 @@ const App = () => {
   const [gameWon, setGameWon] = React.useState(false);
   const [gameLost, setGameLost] = React.useState(false);
 
+  const [boardSize, setBoardSize] = React.useState(10);
+  const [mineCount, setMineCount] = React.useState(2);
+
+  const [controlValue, setControlValue] = React.useState([boardSize, mineCount]);
+
+  const [controlChanging, setControlChanging] = React.useState(false);
+
   const generateBoard = () => {
     const board = [];
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < boardSize; i++) {
       board.push([]);
-      for (let j = 0; j < 10; j++) {
+      for (let j = 0; j < boardSize; j++) {
         board[i].push({
           value: 0,
           state: "hidden"
@@ -21,18 +28,18 @@ const App = () => {
       }
     }
     
-    let mines = 10;
+    let mines = mineCount;
     while (mines > 0) {
-      const x = Math.floor(Math.random() * 10);
-      const y = Math.floor(Math.random() * 10);
+      const x = Math.floor(Math.random() * boardSize);
+      const y = Math.floor(Math.random() * boardSize);
       if (board[x][y].value !== '💣') {
         board[x][y].value = '💣';
         mines--;
       }
     }
 
-    for (let i = 0; i < 10; i++) {
-      for (let j = 0; j < 10; j++) {
+    for (let i = 0; i < boardSize; i++) {
+      for (let j = 0; j < boardSize; j++) {
         if (board[i][j].value !== '💣') {
           board[i][j].value = countAdjacentMines(board,i, j);
         }
@@ -47,18 +54,26 @@ const App = () => {
 
   useEffect(() => {
     if(gameStarted) {
-      if(countOf(boardData, "revealed") === 90) {
+      if(countOf(boardData, "revealed") === boardSize * boardSize - mineCount) {
         setGameWon(true);
-        revealBoard("revealed");
-        // generateBoard();
       }
-      console.log(countOf(boardData,"revealed"));
     }
-
   }, [boardData, gameStarted]);
 
+  useEffect(() => {
+    if(controlChanging) {
+      setBoardSize(controlValue[0]);
+      setMineCount(controlValue[1]);
+      setControlChanging(false);
+    }
+  }, [controlChanging]);
+
+  useEffect(() => {
+    startNewGame();
+  }, [boardSize, mineCount]);
+
   function handCellClick(x, y) {
-    console.log('clicked', x, y)
+    if(boardData[x][y].state === "🚩") { return; }
     const board = [...boardData];
     if (board[x][y].value === '💣') {
       setGameLost(true);
@@ -77,10 +92,10 @@ const App = () => {
     let count = 0;
     for (let i = -1; i <= 1; i++) {
       let actRow = x + i;
-      if (actRow >= 0 && actRow < 10) {
+      if (actRow >= 0 && actRow < boardSize) {
         for (let j = -1; j <= 1; j++) {
           let actCol = y + j;
-          if (actCol >= 0 && actCol < 10) {
+          if (actCol >= 0 && actCol < boardSize) {
             if (board[actRow][actCol].value === '💣') {
               count++;
             }
@@ -95,10 +110,10 @@ const App = () => {
 
     for (let i = -1; i <= 1; i++) {
       let actRow = x + i;
-      if (actRow >= 0 && actRow < 10) {
+      if (actRow >= 0 && actRow < boardSize) {
         for (let j = -1; j <= 1; j++) {
           let actCol = y + j;
-          if (actCol >= 0 && actCol < 10) {
+          if (actCol >= 0 && actCol < boardSize) {
             if (boardData[actRow][actCol].state === "hidden") {
               handCellClick(actRow, actCol);
             }
@@ -111,8 +126,8 @@ const App = () => {
 
   function revealBoard(state) {
     const board = [...boardData];
-    for (let i = 0; i < 10; i++) {
-      for (let j = 0; j < 10; j++) {
+    for (let i = 0; i < boardSize; i++) {
+      for (let j = 0; j < boardSize; j++) {
         if(board[i][j].value === state) {
         board[i][j].state = "revealed";
         }
@@ -124,13 +139,16 @@ const App = () => {
   function handleCellContextMenu(e, x, y) {
     e.preventDefault();
     const board = [...boardData];
+    console.log("board state: ", board[x][y].state);
+
 
     if (board[x][y].state === "hidden") {
-      if (countOf(board, "🚩") === 10) {
+      if (countOf(board, "🚩") >= mineCount) {
         return;
       }
       board[x][y].state = "🚩";
-    } else {
+    } 
+    else if (board[x][y].state === "🚩") {
       board[x][y].state = "hidden";
     }
     setBoardData(board);
@@ -138,8 +156,8 @@ const App = () => {
 
   function countOf(board, state) {
     let count = 0;
-    for (let i = 0; i < 10; i++) {
-      for (let j = 0; j < 10; j++) {
+    for (let i = 0; i < boardSize; i++) {
+      for (let j = 0; j < boardSize; j++) {
         if (board[i][j].state === state) {
           count++;
         }
@@ -151,19 +169,52 @@ const App = () => {
   function startNewGame() {
     setGameLost(false);
     setGameWon(false);
+    setGameStarted(false);
     generateBoard();
+  }
+
+  function handleControlSizeChange(e) {
+    const value = e.target.value;
+    setControlValue([value, controlValue[1]]);
+  }
+
+  function handleControlMinesChange(e) {
+    const value = e.target.value;
+    setControlValue([controlValue[0], value]);
+  }
+
+  function handleControlChange() {
+    setGameStarted(false);
+    setControlChanging(true);
+
   }
 
   return (
     <div className="App">
       <div>
-        <button onClick={() => startNewGame()}>New Game</button>
-        <span>opened: {gameStarted && countOf(boardData, "revealed")}/90   </span>
-        <span>flagged: {gameStarted && countOf(boardData, "🚩")}/10</span>
+        <div className='score-board'>
+        <div className='score-item'>✅ opened: {gameStarted && countOf(boardData, "revealed")}/{boardSize*boardSize-mineCount}   </div>
+        <div className='score-item'>flagged: {gameStarted && countOf(boardData, "🚩")}/{mineCount} 🚩</div>
+        </div>
       </div>
       <Board board={boardData} lost={gameLost} won={gameWon} handCellClick={handCellClick} handleCellContextMenu={handleCellContextMenu} />
-      <button onClick={() => {boardData.lost = true}}>test</button>
-      <a href='https://github.com/stefanszeke/minesweeper_in_react'>source</a>
+        <div className='controls'>
+          <div className='control-inputs'>
+            <div>
+              <label htmlFor="size">Board size: </label>
+              <input type="number" id="size" name="size" min="5"max="20" defaultValue={controlValue[0]} onChange={handleControlSizeChange}></input>
+            </div>
+            <div>
+              <label htmlFor="mines">Mines: </label>
+              <input type="number" id="mines" name="mines" min="1" max="50" defaultValue={controlValue[1]} onChange={handleControlMinesChange}></input>
+            </div>
+          </div>
+          <div className='control-buttons'>
+            <button onClick={() => startNewGame()}>New Game</button>
+            <button onClick={handleControlChange}> change</button>
+          </div>
+        </div>
+      <a target="_blank" rel="noopener" href='https://github.com/stefanszeke/minesweeper_in_react/tree/master'>source</a>
     </div>
   )
 
