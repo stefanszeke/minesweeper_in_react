@@ -50,18 +50,11 @@ const App = () => {
         }
       }
     }
-
     setBoardData(board);
     setGameStarted(true);
   }
 
   useEffect(() => { generateBoard() }, []);
-
-  useEffect(() => {
-
-     
-    
-  }, [timerOn]);
 
   useEffect(() => {
     if(gameStarted) {
@@ -86,12 +79,12 @@ const App = () => {
     if(controlChanging) {
       setBoardSize(controlValue[0]);
       setMineCount(controlValue[1]);
-      setControlChanging(false);
     }
   }, [controlChanging]);
-
+  
   useEffect(() => {
     startNewGame();
+    setControlChanging(false);
   }, [boardSize, mineCount]);
 
   function handCellClick(x, y) {
@@ -176,6 +169,7 @@ const App = () => {
   }
 
   function countOf(board, state) {
+    if(!controlChanging) {
     let count = 0;
     for (let i = 0; i < boardSize; i++) {
       for (let j = 0; j < boardSize; j++) {
@@ -186,6 +180,7 @@ const App = () => {
     }
     return count;
   }
+  }
 
   function startNewGame() {
     setGameLost(false);
@@ -193,6 +188,7 @@ const App = () => {
     setGameStarted(false);
     setTimerOn(false);
     setResetTimer(resetTimer => !resetTimer);
+
     generateBoard();
   }
 
@@ -207,14 +203,12 @@ const App = () => {
   }
 
   function handleControlChange() {
-    setGameStarted(false);
-    setControlChanging(true);
-    startNewGame();
+    if(controlValue[0] != boardSize || controlValue[1] != mineCount) {
+      setControlChanging(true);
+      startNewGame();
+    }
   }
 
-  function handleTimerOn() {
-    setTimerOn(timerOn => !timerOn);
-  }
 
   return (
     <div className="App">
