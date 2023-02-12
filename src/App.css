@@ -4,6 +4,17 @@
 
 }
 
+.title {
+  font-size: 2rem;
+  color: white;
+  margin-bottom: 20px;
+  background-color: rgb(31, 34, 37);
+  border: 1px solid rgb(154, 154, 154);
+  padding: 10px;
+  border-radius: 4px;
+  text-align: center;
+}
+
 .score-board {
   margin: 20px 0;
   display: grid;
@@ -13,11 +24,16 @@
   padding: 10px;
   border-radius: 4px;
   border: 1px solid rgb(154, 154, 154);
-  width: 320px;
+  width: 370px;
 }
 
 .score-item {
   color: white;
+  width: 140px;
+}
+
+.score-item-flag {
+  text-align: end;
 }
 
 

@@ -1,0 +1,22 @@
+.timer {
+    line-height: 0px;
+    display: grid;
+    place-items: center;
+    grid-auto-flow: row;
+    gap: 5px;
+    font-size: 1rem;
+    color: white;
+}
+
+
+.timer-top {
+
+    display: grid;
+    grid-auto-flow: column;
+    justify-content: center;
+}
+
+.timer-bottom {
+
+    color: rgb(80, 80, 80);
+}

@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import './App.css';
 import Board from './Components/Board';
+import Timer from './Components/Timer';
 
 
 const App = () => {
@@ -15,6 +16,10 @@ const App = () => {
   const [controlValue, setControlValue] = React.useState([boardSize, mineCount]);
 
   const [controlChanging, setControlChanging] = React.useState(false);
+
+  const [timerOn, setTimerOn] = React.useState(false);
+  const [time, setTime] = React.useState(0);
+  const [resetTimer, setResetTimer] = React.useState(false);
 
   const generateBoard = () => {
     const board = [];
@@ -53,12 +58,29 @@ const App = () => {
   useEffect(() => { generateBoard() }, []);
 
   useEffect(() => {
+
+     
+    
+  }, [timerOn]);
+
+  useEffect(() => {
     if(gameStarted) {
       if(countOf(boardData, "revealed") === boardSize * boardSize - mineCount) {
-        setGameWon(true);
+        setGameWon(true); // win condition
+      }
+      if(!timerOn &&( countOf(boardData, "revealed") > 0)) {
+        setTimerOn(true);
       }
     }
   }, [boardData, gameStarted]);
+
+  useEffect(() => {
+    if(gameWon || gameLost) {
+      setTimerOn(false);
+    }
+  }, [gameWon, gameLost]);
+
+
 
   useEffect(() => {
     if(controlChanging) {
@@ -76,7 +98,7 @@ const App = () => {
     if(boardData[x][y].state === "🚩") { return; }
     const board = [...boardData];
     if (board[x][y].value === '💣') {
-      setGameLost(true);
+      setGameLost(true); // lose condition
       revealBoard("💣");
       // generateBoard();
     } else {
@@ -139,7 +161,6 @@ const App = () => {
   function handleCellContextMenu(e, x, y) {
     e.preventDefault();
     const board = [...boardData];
-    console.log("board state: ", board[x][y].state);
 
 
     if (board[x][y].state === "hidden") {
@@ -170,6 +191,8 @@ const App = () => {
     setGameLost(false);
     setGameWon(false);
     setGameStarted(false);
+    setTimerOn(false);
+    setResetTimer(resetTimer => !resetTimer);
     generateBoard();
   }
 
@@ -186,15 +209,21 @@ const App = () => {
   function handleControlChange() {
     setGameStarted(false);
     setControlChanging(true);
+    startNewGame();
+  }
 
+  function handleTimerOn() {
+    setTimerOn(timerOn => !timerOn);
   }
 
   return (
     <div className="App">
       <div>
+        <h1 className='title'>minesweeper</h1>
         <div className='score-board'>
-        <div className='score-item'>✅ opened: {gameStarted && countOf(boardData, "revealed")}/{boardSize*boardSize-mineCount}   </div>
-        <div className='score-item'>flagged: {gameStarted && countOf(boardData, "🚩")}/{mineCount} 🚩</div>
+          <div className='score-item'>✅ opened: {gameStarted && countOf(boardData, "revealed")}/{boardSize*boardSize-mineCount}   </div>
+          <Timer timerOn={timerOn} time={time} resetTimer={resetTimer} />
+          <div className='score-item score-item-flag'>flagged: {gameStarted && countOf(boardData, "🚩")}/{mineCount} 🚩</div>
         </div>
       </div>
       <Board board={boardData} lost={gameLost} won={gameWon} handCellClick={handCellClick} handleCellContextMenu={handleCellContextMenu} />
